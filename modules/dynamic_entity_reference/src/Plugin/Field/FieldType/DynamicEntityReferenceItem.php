@@ -3,6 +3,7 @@
 namespace Drupal\dynamic_entity_reference\Plugin\Field\FieldType;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -34,8 +35,7 @@ use Drupal\dynamic_entity_reference\DataDynamicReferenceDefinition;
  *   no_ui = FALSE,
  *   list_class = "\Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList",
  *   default_widget = "dynamic_entity_reference_default",
- *   default_formatter = "dynamic_entity_reference_label",
- *   constraints = {"ValidDynamicReference" = {}}
+ *   default_formatter = "dynamic_entity_reference_label"
  * )
  */
 class DynamicEntityReferenceItem extends EntityReferenceItem {
@@ -44,27 +44,27 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    * {@inheritdoc}
    */
   public static function defaultStorageSettings() {
-    return array(
+    return [
       'exclude_entity_types' => TRUE,
-      'entity_type_ids' => array(),
-    );
+      'entity_type_ids' => [],
+    ];
   }
 
   /**
    * {@inheritdoc}
    */
   public static function defaultFieldSettings() {
-    $default_settings = array();
+    $default_settings = [];
     $labels = \Drupal::service('entity_type.repository')->getEntityTypeLabels(TRUE);
     $options = $labels[(string) t('Content', [], ['context' => 'Entity type group'])];
     // Field storage settings are not accessible here so we are assuming that
     // all the entity types are referenceable by default.
     // See https://www.drupal.org/node/2346273#comment-9385179 for more details.
     foreach (array_keys($options) as $entity_type_id) {
-      $default_settings[$entity_type_id] = array(
+      $default_settings[$entity_type_id] = [
         'handler' => "default:$entity_type_id",
-        'handler_settings' => array(),
-      );
+        'handler_settings' => [],
+      ];
     }
     return $default_settings;
   }
@@ -96,25 +96,25 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    * {@inheritdoc}
    */
   public static function schema(FieldStorageDefinitionInterface $field_definition) {
-    $columns = array(
-      'target_id' => array(
+    $columns = [
+      'target_id' => [
         'description' => 'The ID of the target entity.',
         'type' => 'int',
         'unsigned' => TRUE,
-      ),
-      'target_type' => array(
+      ],
+      'target_type' => [
         'description' => 'The Entity Type ID of the target entity.',
         'type' => 'varchar',
         'length' => EntityTypeInterface::BUNDLE_MAX_LENGTH,
-      ),
-    );
+      ],
+    ];
 
-    $schema = array(
+    $schema = [
       'columns' => $columns,
-      'indexes' => array(
-        'target_id' => array('target_id', 'target_type'),
-      ),
-    );
+      'indexes' => [
+        'target_id' => ['target_id', 'target_type'],
+      ],
+    ];
 
     return $schema;
   }
@@ -145,15 +145,15 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    */
   public function getSettableOptions(AccountInterface $account = NULL) {
     $field_definition = $this->getFieldDefinition();
-    $options = array();
+    $options = [];
     $settings = $this->getSettings();
     foreach (static::getTargetTypes($settings) as $target_type) {
       $options[$target_type] = \Drupal::service('plugin.manager.dynamic_entity_reference_selection')->getSelectionHandler($field_definition, $this->getEntity(), $target_type)->getReferenceableEntities();
     }
     if (empty($options)) {
-      return array();
+      return [];
     }
-    $return = array();
+    $return = [];
     foreach ($options as $target_type => $referenceable_entities) {
       // Rebuild the array by changing the bundle key into the bundle label.
       $bundles = \Drupal::entityManager()->getBundleInfo($target_type);
@@ -176,22 +176,27 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
   public function storageSettingsForm(array &$form, FormStateInterface $form_state, $has_data) {
     // @todo inject this.
     $labels = \Drupal::service('entity_type.repository')->getEntityTypeLabels(TRUE);
-
-    $element['exclude_entity_types'] = array(
+    $options = $labels[(string) t('Content', [], ['context' => 'Entity type group'])];
+    foreach (array_keys($options) as $entity_type_id) {
+      if (!static::entityHasIntegerId($entity_type_id)) {
+        unset($options[$entity_type_id]);
+      }
+    }
+    $element['exclude_entity_types'] = [
       '#type' => 'checkbox',
       '#title' => t('Exclude the selected items'),
       '#default_value' => $this->getSetting('exclude_entity_types'),
       '#disabled' => $has_data,
-    );
+    ];
 
-    $element['entity_type_ids'] = array(
+    $element['entity_type_ids'] = [
       '#type' => 'select',
       '#title' => t('Select items'),
-      '#options' => $labels[(string) t('Content', [], ['context' => 'Entity type group'])],
+      '#options' => $options,
       '#default_value' => $this->getSetting('entity_type_ids'),
       '#disabled' => $has_data,
       '#multiple' => TRUE,
-    );
+    ];
 
     return $element;
   }
@@ -201,7 +206,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    */
   public function fieldSettingsForm(array $form, FormStateInterface $form_state) {
 
-    $settings_form = array();
+    $settings_form = [];
     $settings = $this->getSettings();
     foreach (static::getTargetTypes($settings) as $target_type) {
       $entity_type = \Drupal::entityTypeManager()->getDefinition($target_type);
@@ -237,7 +242,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
     $manager = \Drupal::service('plugin.manager.dynamic_entity_reference_selection');
     // Get all selection plugins for this entity type.
     $selection_plugins = $manager->getSelectionGroups($target_type);
-    $handlers_options = array();
+    $handlers_options = [];
     foreach (array_keys($selection_plugins) as $selection_group_id) {
       // We only display base plugins (e.g. 'default', 'views', ...) and not
       // entity type specific plugins (e.g. 'default:node', 'default:user',
@@ -251,45 +256,45 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
       }
     }
 
-    $form = array(
+    $form = [
       '#type' => 'container',
       '#process' => [[EntityReferenceItem::class, 'fieldSettingsAjaxProcess']],
       '#element_validate' => [[DynamicEntityReferenceItem::class, 'fieldSettingsFormValidate']],
-    );
-    $form['handler'] = array(
+    ];
+    $form['handler'] = [
       '#type' => 'details',
       '#title' => t('Reference type'),
       '#open' => TRUE,
       '#tree' => TRUE,
       '#process' => [[EntityReferenceItem::class, 'formProcessMergeParent']],
-    );
+    ];
 
-    $form['handler']['handler'] = array(
+    $form['handler']['handler'] = [
       '#type' => 'select',
       '#title' => t('Reference method'),
       '#options' => $handlers_options,
       '#default_value' => $field_settings[$target_type]['handler'],
       '#required' => TRUE,
       '#ajax' => TRUE,
-      '#limit_validation_errors' => array(),
-    );
-    $form['handler']['handler_submit'] = array(
+      '#limit_validation_errors' => [],
+    ];
+    $form['handler']['handler_submit'] = [
       '#type' => 'submit',
       '#value' => t('Change handler'),
-      '#limit_validation_errors' => array(),
-      '#attributes' => array(
-        'class' => array('js-hide'),
-      ),
-      '#submit' => array('entity_reference_settings_ajax_submit'),
-    );
+      '#limit_validation_errors' => [],
+      '#attributes' => [
+        'class' => ['js-hide'],
+      ],
+      '#submit' => ['entity_reference_settings_ajax_submit'],
+    ];
 
-    $form['handler']['handler_settings'] = array(
+    $form['handler']['handler_settings'] = [
       '#type' => 'container',
-      '#attributes' => array('class' => array('entity_reference-settings')),
-    );
+      '#attributes' => ['class' => ['entity_reference-settings']],
+    ];
 
     $handler = $manager->getSelectionHandler($field, NULL, $target_type);
-    $form['handler']['handler_settings'] += $handler->buildConfigurationForm(array(), $form_state);
+    $form['handler']['handler_settings'] += $handler->buildConfigurationForm([], $form_state);
 
     return $form;
   }
@@ -344,8 +349,11 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    * {@inheritdoc}
    */
   public static function mainPropertyName() {
-    // We have two main properties i.e. target_type and target_id.
-    return NULL;
+    // Dynamic entity reference field has two main properties i.e. target_type
+    // and target_id but for entity field query to evaluate the relationship
+    // specifier correctly the main property is needed. It is also needed to
+    // render the correct field value in views.
+    return 'target_id';
   }
 
   /**
@@ -512,7 +520,9 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    */
   public static function getTargetTypes($settings) {
     $labels = \Drupal::service('entity_type.repository')->getEntityTypeLabels(TRUE);
-    $options = array_keys($labels[(string) t('Content', [], ['context' => 'Entity type group'])]);
+    $options = array_filter(array_keys($labels[(string) t('Content', [], ['context' => 'Entity type group'])]), function ($entity_type_id) {
+      return static::entityHasIntegerId($entity_type_id);
+    });
 
     if (!empty($settings['exclude_entity_types'])) {
       return array_diff($options, $settings['entity_type_ids'] ?: []);
@@ -520,6 +530,32 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
     else {
       return array_intersect($options, $settings['entity_type_ids'] ?: []);
     }
+  }
+
+  /**
+   * Determines if an entity type has an integer-based ID definition.
+   *
+   * @param string $entity_type_id
+   *   The ID the represents the entity type.
+   *
+   * @return bool
+   *   Returns TRUE if the entity type has an integer-based ID definition and
+   *   FALSE otherwise.
+   */
+  public static function entityHasIntegerId($entity_type_id) {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
+    // Make sure entity type is a content entity type.
+    if (!($entity_type instanceof ContentEntityTypeInterface)) {
+      return FALSE;
+    }
+    // Make sure entity type has an id.
+    if (!$entity_type->hasKey('id')) {
+      return FALSE;
+    }
+    /** @var \Drupal\Core\Field\FieldDefinitionInterface[] $field_definitions */
+    $field_definitions = \Drupal::service('entity_field.manager')->getBaseFieldDefinitions($entity_type_id);
+    $entity_type_id_definition = $field_definitions[$entity_type->getKey('id')];
+    return $entity_type_id_definition->getType() === 'integer';
   }
 
   /**
