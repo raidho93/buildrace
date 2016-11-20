@@ -1,0 +1,16 @@
+nexx_integration.settings:
+  type: mapping
+  label: 'nexx Settings'
+  mapping:
+    video_bundle:
+      type: string
+      label: 'The bundle of the entity which is used.'
+    nexx_api_url:
+      type: string
+      label:  'The URL to the nexx CRUD API.'
+    nexx_api_authkey:
+      type: string
+      label:  'Authkey for nexx API.'
+    omnia_id:
+      type: integer
+      label:  'The unique identifier of the site, given by nexx.tv.'

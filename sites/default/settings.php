@@ -285,7 +285,7 @@ $config_directories = array();
  *   $settings['hash_salt'] = file_get_contents('/home/example/salt.txt');
  * @endcode
  */
-$settings['hash_salt'] = '';
+$settings['hash_salt'] = 'c0mgrpEw1LueTjF9Y25VR9_VUIRjmpNMZEZLFO6X0fHmSHlLZE0vLfMksTgJbB43IMAQDwvkfA';
 
 /**
  * Deployment identifier.
@@ -752,3 +752,15 @@ $settings['file_scan_ignore_directories'] = [
 # if (file_exists(__DIR__ . '/settings.local.php')) {
 #   include __DIR__ . '/settings.local.php';
 # }
+$databases['default']['default'] = array (
+  'database' => 'animalepierdute',
+  'username' => 'root',
+  'password' => 'danutel',
+  'prefix' => '',
+  'host' => 'localhost',
+  'port' => '3306',
+  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+  'driver' => 'mysql',
+);
+$settings['install_profile'] = 'standard';
+$config_directories['sync'] = 'sites/default/files/config_K8Q5TAmHJkaBUA0B4TG5L1iVIpjWKaFjF-3Tbxh0UVaBzPBTl3XfX1-bJSh0CeeFrz7eXcoFLQ/sync';

@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.gallery.field_media
+    - paragraphs.paragraphs_type.gallery
+  module:
+    - entity_browser_entity_form
+    - inline_entity_form
+id: paragraph.gallery.default
+targetEntityType: paragraph
+bundle: gallery
+mode: default
+content:
+  field_media:
+    type: inline_entity_form_complex
+    weight: 0
+    settings:
+      override_labels: true
+      label_singular: Gallery
+      label_plural: Galleries
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: gallery_browser
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,4 @@
+services:
+  media_expire.service:
+    class: Drupal\media_expire\MediaExpireService
+    arguments: ['@entity.manager', '@entity.query']

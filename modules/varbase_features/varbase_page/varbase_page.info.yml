@@ -1,0 +1,29 @@
+name: 'Varbase Page'
+description: 'Provides Basic page content type and related configuration.'
+type: module
+dependencies:
+  - content_translation
+  - ds
+  - field
+  - language
+  - menu_ui
+  - node
+  - page_manager
+  - panelizer
+  - path
+  - pathauto
+  - rdf
+  - smart_trim
+  - text
+  - user
+package: Varbase
+# version: 8.x-4.0
+# core: 8.x
+# project: varbase
+# datestamp: 1476014041
+
+# Information added by Drupal.org packaging script on 2016-11-05
+version: '8.x-4.0-beta10'
+core: '8.x'
+project: 'varbase'
+datestamp: 1478356002

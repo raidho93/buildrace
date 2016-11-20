@@ -1,0 +1,7 @@
+entity_browser_ief_test_simulate_jquery:
+  version: VERSION
+  js:
+    js/jquery.simulate.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

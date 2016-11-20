@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Contains hooks for Inline entity form JavaScript tests.
+ */
+
+/**
+ * Add jQuery library to simulate actions.
+ */
+function entity_browser_ief_test_page_attachments(array &$page) {
+  $page['#attached']['library'][] = 'entity_browser_ief_test/entity_browser_ief_test_simulate_jquery';
+}

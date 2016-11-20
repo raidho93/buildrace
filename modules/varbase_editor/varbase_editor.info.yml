@@ -1,0 +1,14 @@
+name: 'Varbase Editor'
+description: 'Editor profile and settings to be used in most websites.'
+type: module
+core: 8.x
+dependencies:
+  - ckeditor
+  - editor
+  - entity_embed
+  - filter
+  - linkit
+  - node
+  - video_embed_wysiwyg
+version: 8.x-4.0
+package: Varbase
