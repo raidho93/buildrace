@@ -1,0 +1,14 @@
+// Progress
+// -----------------------------------------------------------------------------
+.progress .progress {
+
+  &__track,
+  &__bar {
+    border-radius: 2px;
+    height: 24px;
+  }
+
+  &__bar {
+    background: $brand-primary;
+  }
+}

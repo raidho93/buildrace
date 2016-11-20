@@ -1,0 +1,50 @@
+name: Sizzle
+description: 'The default theme for Open Restaurant based on Radix.'
+type: theme
+base theme: radix
+package: 'Open Restaurant'
+# version: 2.0-dev
+# core: 8.x
+
+regions:
+  header: Header
+  sidebar_first: 'Sidebar first'
+  navigation: Navigation
+  hero: Hero
+  content: Content
+  bottom: Bottom
+  footer: Footer
+
+libraries:
+ - sizzle/global-styling
+
+demo_content:
+  - content/basic.blocks.yml
+  - content/pages.nodes.yml
+  - content/links.yml
+
+  - content/hero.images.yml
+  - content/hero.blocks.yml
+
+  - content/blog_posts.images.yml
+  - content/blog_posts.nodes.yml
+
+  - content/events.images.yml
+  - content/events.nodes.yml
+
+  - content/locations.images.yml
+  - content/locations.nodes.yml
+
+  - content/menus.nutrition_types.images.yml
+  - content/menus.nutrition_types.yml
+#  - content/field_collection.field_collection_item.yml
+  - content/menus.menu_categories.yml
+
+  - content/menus.images.yml
+  - content/menus.nodes.yml
+
+# Information added by Drupal.org packaging script on 2016-09-08
+version: '8.x-2.00-alpha3'
+core: '8.x'
+project: 'openrestaurant'
+datestamp: 1473339905

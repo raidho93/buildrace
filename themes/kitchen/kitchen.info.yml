@@ -1,0 +1,26 @@
+name: Kitchen
+type: theme
+base theme: seven
+description: 'The default administration theme for Open Restaurant.'
+# version: 2.0-dev
+# core: 8.x
+libraries:
+ - kitchen/global-styling
+regions:
+  header: 'Header'
+  pre_content: 'Pre-content'
+  breadcrumb: Breadcrumb
+  highlighted: Highlighted
+  help: Help
+  content: Content
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
+  sidebar_first: 'First sidebar'
+regions_hidden:
+  - sidebar_first
+
+# Information added by Drupal.org packaging script on 2016-09-08
+version: '8.x-2.00-alpha3'
+core: '8.x'
+project: 'openrestaurant'
+datestamp: 1473339905

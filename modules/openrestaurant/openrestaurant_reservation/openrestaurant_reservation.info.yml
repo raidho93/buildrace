@@ -1,0 +1,14 @@
+name: Reservation
+description: 'Provides a simple reservation system for Open Restaurant'
+type: module
+# core: 8.x
+dependencies:
+  - telephone
+  - openrestaurant_config
+# version: 8.x-2.0-dev
+package: 'Open Restaurant (Experimental)'
+# Information added by Drupal.org packaging script on 2016-09-08
+version: '8.x-2.00-alpha3'
+core: '8.x'
+project: 'openrestaurant'
+datestamp: 1473339905
