@@ -1,8 +1,0 @@
-name: Infinite Paragraphs
-type: module
-description: Provides layout switcher for pargraphs.
-package: Infinite
-core: 8.x
-version: 8.x-1.x-dev
-dependencies:
-  - paragraphs
