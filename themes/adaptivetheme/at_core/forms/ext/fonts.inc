@@ -69,7 +69,7 @@ function font_elements() {
       ),
       'links' => array(
         'label' => 'Links',
-        'selector' => 'a',
+        'selector' => 'a, .un-button',
       ),
       'menus' => array(
         'label' => 'Menus',
@@ -83,13 +83,21 @@ function font_elements() {
         'label' => 'Responsive menu toggle',
         'selector' => '.rm-toggle, .rm-toggle__link',
       ),
-      'buttons' => array(
-        'label' => 'Buttons',
-        'selector' => 'button, .button',
+      'image_captions' => array(
+        'label' => 'Image captions',
+        'selector' => 'figcaption, .field-type-image__figcaption',
+      ),
+      'slideshow_captions' => array(
+        'label' => 'Slideshow captions',
+        'selector' => 'p.flex-caption',
       ),
       'tabs' => array(
         'label' => 'Tabs',
         'selector' => '.tabs a',
+      ),
+      'breadcrumbs' => array(
+        'label' => 'Breadcrumbs',
+        'selector' => '.breadcrumb__list-item, .breadcrumb__link, .breadcrumb__title',
       ),
       'h1h4' => array(
         'label' => 'h1 to h4 headings',
@@ -122,6 +130,26 @@ function font_elements() {
       'h6' => array(
         'label' => 'h6',
         'selector' => 'h6',
+      ),
+      'formitems' => array(
+        'label' => 'Form elements',
+        'selector' => 'form, input, select, textarea',
+      ),
+      'buttons' => array(
+        'label' => 'Buttons',
+        'selector' => 'button, .button',
+      ),
+      'tables' => array(
+        'label' => 'Tables',
+        'selector' => 'table',
+      ),
+      'blockquotes' => array(
+        'label' => 'Blockquotes & citations',
+        'selector' => 'blockquote, cite, q',
+      ),
+      'code' => array(
+        'label' => 'Code',
+        'selector' => 'code, pre, var, kbd, samp',
       ),
       'custom_selectors' => array(
         'label' => 'Custom selectors',

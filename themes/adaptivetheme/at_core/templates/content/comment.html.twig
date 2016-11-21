@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Adaptivetheme implementation for comments.
+ * Theme override for comments.
  *
  * Available variables:
  * - author: Comment author. Can be a link or plain text.
@@ -22,7 +22,6 @@
  * - submitted: Submission information created from author and created
  *   during template_preprocess_comment().
  * - user_picture: The comment author's profile picture.
- * - signature: The comment author's signature.
  * - status: Comment status. Possible values are:
  *   unpublished, published, or preview.
  * - title: Comment title, linked to the comment.
@@ -42,6 +41,7 @@
  * - content_attributes: List of classes for the styling of the comment content.
  * - title_attributes: Same as attributes, except applied to the main title
  *   tag that appears in the template.
+ * - threaded: A flag indicating whether the comments are threaded or not.
  *
  * These variables are provided to give context about the parent comment (if
  * any):
@@ -62,46 +62,45 @@
  * - entity: Entity the comments are attached to.
  *
  * @see template_preprocess_comment()
- *
- * @ingroup themeable
  */
 #}
-{%
+{%-
   set classes = [
     'comment',
     'js-comment',
     status != 'published' ? status,
     comment.owner.anonymous ? 'by-anonymous',
     author_id and author_id == commented_entity.getOwnerId() ? 'by-' ~ commented_entity.getEntityTypeId() ~ '-author',
-    title_visibility == true ? 'has-title',
+    title_visibility ? 'has-title',
     'clearfix',
   ]
-%}
-<article{{ attributes.addClass(classes) }}>
+-%}
+<article role="article"{{ attributes.addClass(classes)|without('role') }}>
   <div class="comment__container">
 
-    {% if title %}
+    {%- if title -%}
       {{ title_prefix }}
-      {%
+      {%-
         set title_classes = [
-          'comment__title',
-          title_visibility == false ? 'visually-hidden',
+          title_visibility ? 'comment__title' : 'comment__title--visually-hidden',
         ]
-      %}
+      -%}
       <h3{{ title_attributes.addClass(title_classes) }}>
         {{ title }}
-        {% if status != 'published' %}
-            <span class="comment__status comment--unpublished marker marker--warning" aria-label="Status message" role="contentinfo"><span class="visually-hidden">{% trans %}This comment is {% endtrans %}</span>{% trans %}Unpublished{% endtrans %}</span>
-        {% endif %}
+        {%- if status != 'published' -%}
+            <span class="comment__status comment--unpublished marker marker--warning" aria-label="Status message" role="contentinfo">
+              <span class="visually-hidden">{% trans %}This comment is {% endtrans %}</span>{% trans %}Unpublished{% endtrans -%}
+            </span>
+        {%- endif -%}
         {#
         Hide the "new" indicator by default, let a piece of JavaScript ask
         the server which comments are new for the user. Rendering the final
         "new" indicator here would break the render cache.
         #}
-        <span class="comment__new marker marker--success hidden" data-comment-timestamp="{{ new_indicator_timestamp }}"></span>
+        <mark class="comment__new marker marker--success hidden" data-comment-timestamp="{{ new_indicator_timestamp }}"></mark>
       </h3>
       {{ title_suffix }}
-    {% endif %}
+    {%- endif -%}
 
     <div{{ meta_attributes }}>
       {{ user_picture }}
@@ -117,17 +116,11 @@
         for accessibility. The list is difficult to navigate in a screen
         reader without this information.
       #}
-      {% if parent %}
+      {%- if parent -%}
         <p class="comment__parent visually-hidden">{{ parent }}</p>
-      {% endif %}
+      {%- endif -%}
 
-      {{ content }}
-
-      {% if signature %}
-        <p class="comment__user-signature">
-          {{ signature }}
-        </p>
-      {% endif %}
+      {{- content -}}
     </div>
 
   </div>

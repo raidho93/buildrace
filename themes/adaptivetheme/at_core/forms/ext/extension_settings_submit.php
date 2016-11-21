@@ -14,11 +14,12 @@ use Drupal\at_core\Theme\ThemeSettingsConfig;
  * @param $form
  * @param $form_state
  */
-function at_core_submit_extension_settings(&$form, &$form_state) {
+function at_core_submit_extension_settings(&$form, \Drupal\Core\Form\FormStateInterface &$form_state) {
   $build_info = $form_state->getBuildInfo();
   $values = $form_state->getValues();
   $theme = $build_info['args'][0];
   $at_core_path = drupal_get_path('theme', 'at_core');
+  $subtheme_path = drupal_get_path('theme', $theme);
 
   // Don't let this timeout easily.
   set_time_limit(60);
@@ -29,9 +30,7 @@ function at_core_submit_extension_settings(&$form, &$form_state) {
   if ($values['settings_enable_extensions'] === 1) {
 
     // Require submit handlers and helper functions for extensions.
-    if ((isset($values['settings_enable_fonts']) && $values['settings_enable_fonts'] === 1) ||
-      (isset($values['settings_enable_titles']) && $values['settings_enable_titles'] === 1)
-    ) {
+    if ((isset($values['settings_enable_fonts']) && $values['settings_enable_fonts'] === 1) || (isset($values['settings_enable_titles']) && $values['settings_enable_titles'] === 1)) {
       require_once($at_core_path . '/forms/ext/fonts.inc');
       require_once($at_core_path . '/forms/ext/fonts_submit.php');
       require_once($at_core_path . '/forms/ext/titles_submit.php');
@@ -63,7 +62,7 @@ function at_core_submit_extension_settings(&$form, &$form_state) {
       require_once($at_core_path . '/forms/ext/mobile_blocks_submit.php');
       at_core_submit_mobile_blocks($values, $theme, $generated_files_path);
     }
-
+    
     // Submit handler for Custom CSS.
     if (isset($values['settings_enable_custom_css']) && $values['settings_enable_custom_css'] === 1) {
       require_once($at_core_path . '/forms/ext/custom_css_submit.php');

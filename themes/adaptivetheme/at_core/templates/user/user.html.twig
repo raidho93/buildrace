@@ -1,40 +1,61 @@
 {#
 /**
  * @file
- * Default theme implementation to present all user data.
+ * Theme override to present all user data.
  *
  * This template is used when viewing a registered user's page,
  * e.g., example.com/user/123. 123 being the user's ID.
  *
  * Available variables:
- * - label: the users name set as a title. Adaptivetheme moves the h1 inside
- *   the article element for proper outlines.
  * - content: A list of content items. Use 'content' to print all content, or
- *   print a subset such as 'content.field_example'.
- * - Field variables: For each field instance attached to the user a
- *   corresponding variable is defined; e.g., account.field_example has a
- *   variable 'field_example' defined. When needing to access a field's raw
- *   values, developers/themers are strongly encouraged to use these
- *   variables. Otherwise they will have to explicitly specify the desired
- *   field language, e.g. account.field_example.en, thus overriding any
- *   language negotiation rule that was previously applied.
- * - title_attributes: HTML attributes set on the label wrapper markup.
+ *   print a subset such as 'content.field_example'. Fields attached to a user
+ *   such as 'user_picture' are available as 'content.user_picture'.
  * - attributes: HTML attributes for the container element.
+ * - user: A Drupal User entity.
+ * - roles: Array of roles for this user.
+ * - view_mode: View mode; for example, "teaser" or "full".
+ * - base_path: The base path, the result of base_path().
+ * - access_profiles: Does the current user have access to view profiles.
  *
  * @see template_preprocess_user()
- * @see at_core_preprocess_user()
- *
- * @ingroup themeable
  */
 #}
-<article{{ attributes.addClass('profile') }}>
+{%-
+  set classes = [
+    'user',
+    'user--profile',
+    'user--id-' ~ user.id,
+    roles ? roles|join(' '),
+    user.isBlocked() ? 'user--is-blocked' : 'user--is-active',
+    view_mode ? 'user--view-mode-' ~ view_mode|clean_class,
+  ]
+-%}
+<article{{ attributes.addClass(classes).setAttribute('role', 'article')|without('id') }}>
 
-  {% if label %}
-    <h1{{ title_attributes.addClass('user__title') }}>{{ label }}</h1>
-  {% endif %}
+  {%- if user.isBlocked() -%}
+    <span class="user__status user--is-blocked marker marker--warning" aria-label="Status message" role="contentinfo">
+      <span class="visually-hidden">{%- trans %}This user is {% endtrans %}</span>{% trans %}Blocked{% endtrans -%}
+    </span>
+  {%- endif -%}
 
-  {% if content %}
+  {{- title_prefix -}}
+  {%- if label -%}
+    {%- if view_mode == 'full' -%}
+      <h1{{ title_attributes.addClass('user__title') }}>{{- label -}}</h1>
+    {%- else -%}
+      <h2{{ title_attributes.addClass('user__title') }}>
+        {%- if access_profiles -%}
+          <a href="{{ base_path }}user/{{ user.id }}" class="user__title-link" rel="bookmark">{{- label -}}</a>
+        {%- else -%}
+          {{- label -}}
+        {%- endif -%}
+      </h2>
+    {%- endif -%}
+  {%- endif -%}
+  {{- title_suffix -}}
+
+  {%- if content -%}
     {{- content -}}
-  {% endif %}
+  {%- endif -%}
 
 </article>

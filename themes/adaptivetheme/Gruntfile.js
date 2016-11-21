@@ -1,10 +1,13 @@
 module.exports = function(grunt) {
-	grunt.initConfig({
+  grunt.initConfig({
 
-		pkg: grunt.file.readJSON('package.json'),
+    pkg: grunt.file.readJSON('package.json'),
 
     uglify: {
       min: {
+        options: {
+          sourceMap: true,
+        },
         files: [{
           expand: true,
           mangle: false,
@@ -22,63 +25,60 @@ module.exports = function(grunt) {
         src: 'at_core/styles/css/*.css',
          options: {
           map: {
-            inline: false,
-            //annotation: 'at_core/styles/css/maps/',
+            inline: false
           },
           processors: [
             require('autoprefixer')({browsers: 'last 5 versions'})
           ]
         }
       },
-      atgen: {
-        src: 'at_generator/styles/css/*.css',
-        options: {
-          map: {
-            inline: false,
-            //annotation: 'at_core/styles/css/maps/',
-          },
-          processors: [
-            require('autoprefixer')({browsers: 'last 5 versions'})
-          ]
-        }
-      },
-      at_layout_plugin: {
+      layout_plugin: {
         src: 'at_core/layout_plugin/css/**/*.css',
         options: {
           map: {
-            inline: false,
-            //annotation: 'at_core/styles/css/maps/',
+            inline: false
           },
           processors: [
             require('autoprefixer')({browsers: 'last 5 versions'})
+          ]
+        }
+      },
+      mimic: {
+        src: 'at_core/ckeditor/skins/mimic/*.css',
+        options: {
+          map: {
+            inline: false
+          },
+          processors: [
+            require('autoprefixer')({browsers: 'last 7 versions'})
           ]
         }
       }
     },
 
-		compass: {
-			atcore: {
-				options: {
+    compass: {
+      atcore: {
+        options: {
           config: 'at_core/styles/config.rb',
           basePath: 'at_core/styles',
           bundleExec: true
-				}
-			},
-			atgen: {
-				options: {
-          config: 'at_generator/styles/config.rb',
-          basePath: 'at_generator/styles',
-          bundleExec: true
-				}
-			},
-      at_layout_plugin: {
+        }
+      },
+      layout_plugin: {
         options: {
           config: 'at_core/layout_plugin/config.rb',
           basePath: 'at_core/layout_plugin',
           bundleExec: true
         }
+      },
+      mimic: {
+        options: {
+          config: 'at_core/ckeditor/skins/mimic/config.rb',
+          basePath: 'at_core/ckeditor/skins/mimic',
+          bundleExec: true
+        }
       }
-		},
+    },
 
     csslint: {
       atcore: {
@@ -86,42 +86,42 @@ module.exports = function(grunt) {
           csslintrc: '.csslintrc'
         },
         src: ['at_core/styles/css/*.css']
-	    },
-      atgen: {
-        options: {
-          csslintrc: '.csslintrc'
-        },
-        src: ['at_generator/styles/css/*.css']
-			},
-      at_layout_plugin: {
+      },
+      layout_plugin: {
         options: {
           csslintrc: '.csslintrc'
         },
         src: ['at_core/layout_plugin/css/**/*.css']
+      },
+      mimic: {
+        options: {
+          csslintrc: '.csslintrc'
+        },
+        src: ['at_core/ckeditor/skins/mimic/*.css']
       }
     },
 
-		watch: {
-			atcore: {
-				files: 'at_core/styles/sass/*.scss',
-				tasks: ['compass:atcore', 'postcss:atcore']
-			},
-			atgen: {
-				files: 'at_generator/styles/sass/*.scss',
-				tasks: ['compass:atgen', 'postcss:atgen']
-			},
-      at_layout_plugin: {
+    watch: {
+      atcore: {
+        files: 'at_core/styles/sass/*.scss',
+        tasks: ['compass:atcore', 'postcss:atcore']
+      },
+      layout_plugin: {
         files: 'at_core/layout_plugin/sass/**/*.scss',
-        tasks: ['compass:at_layout_plugin', 'postcss:at_layout_plugin']
+        tasks: ['compass:layout_plugin', 'postcss:layout_plugin']
+      },
+      mimic: {
+        files: 'at_core/ckeditor/skins/mimic/sass/*.scss',
+        tasks: ['compass:mimic', 'postcss:mimic']
       }
-		}
-	});
+    }
+  });
 
   grunt.loadNpmTasks('grunt-postcss');
   grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-compass');
-	grunt.loadNpmTasks('grunt-contrib-csslint');
-	grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-contrib-compass');
+  grunt.loadNpmTasks('grunt-contrib-csslint');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
-	grunt.registerTask('default', ['watch:atcore']);
+  grunt.registerTask('default', ['watch:atcore']);
 }

@@ -32,7 +32,6 @@ $form['markup_overrides']['markup_overrides_settings']['responsive-tables']['set
 );
 
 // PNG logo
-/*
 $form['markup_overrides']['markup_overrides_settings']['png_logo'] = array(
   '#type' => 'details',
   '#title' => t('png Logo default'),
@@ -43,7 +42,6 @@ $form['markup_overrides']['markup_overrides_settings']['png_logo']['settings_png
   '#description' => t('Force the branding block to use <code>logo.png</code> file instead of <code>logo.svg</code> for the default site logo. Place a logo.png file in your themes root directory, e.g. <code>@themelogopath</code>', array('@themelogopath' => $subtheme_path . '/logo.png')),
   '#default_value' => theme_get_setting('settings.png_logo'),
 );
-*/
 
 // Breadcrumbs
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb'] = array(
@@ -54,39 +52,61 @@ $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['descriptio
   '#type' => 'container',
   '#markup' => t('Settings for the breadcrumb block. First enable the breadcrumb block from the <a href="@blockconfig" target="_blank">block configuration page</a>.', array('@blockconfig' => base_path() . 'admin/structure/block')),
 );
-// Breadcrumbs Label?
+// Breadcrumbs label?
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_label'] = array(
   '#type' => 'checkbox',
-  '#title' => t('Show the "You are here" label'),
+  '#title' => t('Show the label'),
   '#default_value' => theme_get_setting('settings.breadcrumb_label'),
 );
-// Breadcrumbs Home link?
+// Breadcrumbs label value.
+$form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_label_value'] = array(
+  '#type' => 'textfield',
+  '#title' => t('Enter text for the breadcrumb label'),
+  '#default_value' => theme_get_setting('settings.breadcrumb_label_value') ? theme_get_setting('settings.breadcrumb_label_value') : t('You are here:'),
+  '#states' => array(
+    'visible' => array('input[name="settings_breadcrumb_label"]' => array('checked' => TRUE)),
+  ),
+);
+// Breadcrumbs home link?
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_home'] = array(
   '#type' => 'checkbox',
   '#title' => t('Always remove the "Home" link'),
   '#default_value' => theme_get_setting('settings.breadcrumb_home'),
 );
-// Breadcrumbs Home Alone link?
+// Breadcrumbs home alone link?
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_home_alone'] = array(
   '#type' => 'checkbox',
   '#title' => t('Remove "Home" when it\'s the only link'),
   '#default_value' => theme_get_setting('settings.breadcrumb_home_alone'),
   '#states' => array(
-    //'unchecked' => array('input[name="settings_breadcrumb_home"]' => array('checked' => TRUE)),
     'disabled' => array('input[name="settings_breadcrumb_home"]' => array('checked' => TRUE)),
   ),
 );
-// Breadcrumbs Title?
+// Breadcrumbs title?
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_title'] = array(
   '#type' => 'checkbox',
   '#title' => t('Add the page title to breadcrumbs'),
   '#default_value' => theme_get_setting('settings.breadcrumb_title'),
 );
-// Breadcrumbs Separator
+// Breadcrumb trim long items.
+$form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_item_length'] = array(
+  '#type' => 'number',
+  '#title' => t('Trim long breadcrumb items'),
+  '#max-length' => 3,
+  '#step' => 0.1,
+  '#default_value' => Html::escape(theme_get_setting('settings.breadcrumb_item_length')),
+  '#description' => t('Long breadcrumb items (such as titles) may look bad, here you can trim them to a specific length. Set to 0 to disable trimming.'),
+  '#attributes' => array(
+    'min' => 0,
+    'max' => 140,
+    'step' => 1,
+  ),
+);
+// Breadcrumbs separator.
 $form['markup_overrides']['markup_overrides_settings']['breadcrumb']['settings_breadcrumb_separator'] = array(
   '#type'  => 'textfield',
   '#title' => t('Separator'),
-  '#description' => t('Use UTF8 chars or escaped unicode, e.g. <code> \00BB </code> (chevron &#187;). You can add spaces also. <a href="@unicodetable" target="_blank">Unicode-table.com</a> is a good place to find codes.', array('@unicodetable' => 'http://unicode-table.com/')),
+  '#description' => t('Use UTF8 chars or escaped unicode, e.g. <code> \00BB </code> (chevron &#187;). Spaces are trimmed. <a href="@unicodetable" target="_blank">Unicode-table.com</a> is a good place to find codes.', array('@unicodetable' => 'http://unicode-table.com/')),
   '#default_value' => Html::escape(theme_get_setting('settings.breadcrumb_separator')),
   '#size' => 25,
   '#maxlength' => 60,

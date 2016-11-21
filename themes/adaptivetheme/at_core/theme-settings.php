@@ -6,8 +6,9 @@
  */
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\Entity;
 use Drupal\at_core\Theme\ThemeInfo;
-use Drupal\at_core\Layout\LayoutGenerator;
+use Drupal\at_core\File\FileOperations;
 use Drupal\at_core\File\DirectoryOperations;
 
 /**
@@ -15,14 +16,21 @@ use Drupal\at_core\File\DirectoryOperations;
  *
  * @param $form
  *   Nested array of form elements that comprise the form.
- *
  * @param $form_state
  *   A keyed array containing the current state of the form.
  */
-function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
+function at_core_form_system_theme_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id = NULL) {
+  // Work-around for a core bug affecting admin themes. See issue #943212.
+  if (isset($form_id)) {
+    return;
+  }
+
   // Set the theme name.
   $build_info = $form_state->getBuildInfo();
-  $theme = $build_info['args'][0];
+
+  $active_theme = \Drupal::theme()->getActiveTheme();
+  $theme = $active_theme->getName();
+  $theme_extension = $active_theme->getExtension();
 
   // Instantiate our Theme info object.
   $themeInfo = new ThemeInfo($theme);
@@ -47,7 +55,13 @@ function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
   $theme_regions = system_region_list($theme, $show = REGIONS_VISIBLE);
 
   // Active themes active blocks
-  $theme_blocks = entity_load_multiple_by_properties('block', ['theme' => $theme]);
+  $block_module = \Drupal::moduleHandler()->moduleExists('breakpoint');
+  if ($block_module == TRUE) {
+    $theme_blocks = \Drupal::entityTypeManager()->getStorage('block')->loadByProperties(['theme' => $theme]);
+  }
+  else {
+    $theme_blocks = NULL;
+  }
 
   // Check for breakpoints module and set a warning and a flag to disable much
   // of the theme settings if its not available.
@@ -70,15 +84,14 @@ function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
     }
   }
   else {
-    drupal_set_message(t('Adaptivetheme requires the <b>Breakpoint module</b>. Open the <a href="!extendpage" target="_blank">Extend</a> page and enable Breakpoint.', array('!extendpage' => base_path() . 'admin/modules')), 'warning');
+    drupal_set_message(t('This theme requires the <b>Breakpoint module</b> to be installed. Go to the <a href="@extendpage" target="_blank">Modules</a> page and install Breakpoint. You cannot set the layout or use this themes custom settings until Breakpoint is installed.', array('@extendpage' => base_path() . 'admin/modules')), 'error');
   }
 
   // Get node types (bundles).
   $node_types = \Drupal\node\Entity\NodeType::loadMultiple();
 
   // View or "Display modes".
-  // TODO entityManager() is deprecated, but how to replace?
-  $node_view_modes = \Drupal::entityManager()->getViewModes('node');
+  $node_view_modes = \Drupal::service('entity_display.repository')->getViewModes('node');
 
   // Unset unwanted view modes
   unset($node_view_modes['rss']);
@@ -96,6 +109,12 @@ function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
 
   // Attached required CSS and JS.
   $form['#attached']['library'][] = 'at_core/at.appearance_settings';
+
+  // Display a rude message if AT Tools is missing...
+  $at_tools_module = \Drupal::moduleHandler()->moduleExists('at_tools');
+  if ($at_tools_module == FALSE) {
+    drupal_set_message(t('Please install the <a href="@at_tools_href" target="_blank">AT Tools</a> module for Drupal 8. Your theme may not operate correctly without this module installed.', array('@at_tools_href' => 'https://www.drupal.org/project/at_tools')), 'warning');
+  }
 
   // AT Core
   if ($theme == 'at_core') {
@@ -122,11 +141,14 @@ function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
         '#value' => $generated_files_path,
       );
 
-      // Extension settings.
-      require_once($at_core_path . '/forms/ext/extension_settings.php');
+      // Check for breakpoint module, a lot of errors without it, this is brutal.
+      if ($breakpoints_module == TRUE) {
+        // Extension settings.
+        require_once($at_core_path . '/forms/ext/extension_settings.php');
 
-      // Layouts.
-      require_once($at_core_path . '/forms/layout/layouts.php');
+        // Layouts.
+        require_once($at_core_path . '/forms/layout/layouts.php');
+      }
 
       // Basic settings - move into details wrapper and collapse.
       $form['basic_settings'] = array(
@@ -155,13 +177,29 @@ function at_core_form_system_theme_settings_alter(&$form, &$form_state) {
   if (\Drupal::moduleHandler()->moduleExists('color')) {
     include_once($at_core_path . '/forms/color/color_submit.php');
     if (isset($build_info['args'][0]) && ($theme = $build_info['args'][0]) && color_get_info($theme) && function_exists('gd_info')) {
-      $form['#process'][] = 'at_core_make_collapsible';
+      $form['#process'][] = 'at_core_color_form';
+    }
+    // TODO This should only happen after color form submit. We need this to
+    // stop 404 errors for the map URL for rewritten color stylesheets.
+    $color_paths = \Drupal::config('color.theme.' . $theme)->get('stylesheets');
+    if (!empty($color_paths)) {
+      $fileOperations = new FileOperations();
+      foreach ($color_paths as $color_path) {
+        $map_string = '/*# sourceMappingURL=maps/' . str_replace('.css', '.css.map', basename($color_path)) . ' */';
+        $fileOperations->fileStrReplace("$color_path", $map_string, '');
+      }
     }
   }
 }
 
-// Helper function to modify the color scheme form.
-function at_core_make_collapsible($form) {
+//
+/**
+ * Helper function to modify the color scheme form.
+ *
+ * @param $form
+ * @return array $form
+ */
+function at_core_color_form($form) {
   $form['color']['#open'] = FALSE;
   $form['color']['actions'] = array(
     '#type' => 'actions',
@@ -182,9 +220,8 @@ function at_core_make_collapsible($form) {
   );
 
   // Magic user Obi Wan gets special Jedi powers.
-  // TODO getUsername() is deprecated, no idea how to replace it.
   $user = \Drupal::currentUser();
-  if (in_array('administrator', $user->getRoles()) && $user->getUsername() == 'Obi Wan') {
+  if (in_array('administrator', $user->getRoles()) && $user->getAccountName() == 'Obi Wan') {
     $form['color']['actions']['log']['#access'] = TRUE;
   }
 

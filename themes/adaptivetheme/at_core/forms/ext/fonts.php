@@ -10,6 +10,7 @@ use Drupal\Component\Utility\Xss;
 
 // Elements to apply fonts to.
 $font_elements = font_elements();
+$websafe_options = array();
 
 // Websafe stacks and select options.
 if ($settings_font_websafe = theme_get_setting('settings.font_websafe')) {
@@ -77,7 +78,7 @@ $form['fonts']['setup']['settings_font_google'] = array(
     '#list_type' => 'ol',
     '#attributes' => array('class' => array('google-font-wizard-desc', 'web-font-desc')),
     '#items' => array(
-      t('Use the <a href="@google_font_wizard" target="_blank">Google font wizard</a> to select your fonts.', array('@google_font_wizard' => 'https://www.google.com/fonts')),
+      t('Use the <a href="@google_font_wizard" target="_blank">Google font wizard</a> to select your fonts.', array('@google_font_wizard' => 'https://fonts.google.com/')),
       t('Click the "Use" button, then copy/paste the URL from the <em>Standard</em> method, e.g. <code>https://fonts.googleapis.com/css?family=Open+Sans</code>'),
       t('Note: always use <code>https</code>, even with <code>http</code> and mixed content websites.'),
     ),
@@ -250,31 +251,7 @@ foreach ($font_elements as $font_element_key => $font_element_values) {
       ),
     );
   }
-
-//  // Case
-//  $form['fonts']['apply'][$font_element_key]['settings_font_case_' . $font_element_key] = array(
-//    '#type' => 'select',
-//    '#title' => t('Case'),
-//    '#default_value' => theme_get_setting('settings.font_case_' . $font_element_key),
-//    '#options' => title_style_options('case'),
-//  );
-//
-//  // Weight
-//  $form['fonts']['apply'][$font_element_key]['settings_font_weight_' . $font_element_key] = array(
-//    '#type' => 'select',
-//    '#title' => t('Weight'),
-//    '#default_value' => theme_get_setting('settings.font_weight_' . $font_element_key),
-//    '#options' => title_style_options('weight'),
-//  );
-//
-//  // Alignment
-//  $form['fonts']['apply'][$font_element_key]['settings_font_alignment_' . $font_element_key] = array(
-//    '#type' => 'select',
-//    '#title' => t('Alignment'),
-//    '#default_value' => theme_get_setting('settings.font_alignment_' . $font_element_key),
-//    '#options' => title_style_options('alignment'),
-//  );
-
+  
   // Font smoothing
   $form['fonts']['apply'][$font_element_key]['settings_font_smoothing_' . $font_element_key] = array(
     '#type' => 'checkbox',
@@ -290,10 +267,17 @@ foreach ($font_elements as $font_element_key => $font_element_values) {
       '#title' => t('Custom Selectors'),
       '#rows' => 3,
       '#default_value' => Xss::filter(theme_get_setting('settings.custom_selectors')),
-      '#description' => t("Enter a comma separated list of valid CSS selectors, with no trailing comma, such as <code>.node-content, .block-content</code>. Note that due to security reason you cannot use the greater than symbol (>) as a child combinator selector."),
+      '#description' => t("Enter a comma separated list of valid CSS selectors, with no trailing comma, such as <code>.node__content, .block__content </code>. Note that due to security reason you cannot use the greater than symbol (>) as a child combinator selector."),
       '#states' => array(
         'disabled' => array('select[name="settings_selectors_font_type"]' => array('value' => '<none>')),
       ),
     );
   }
+
+  // Show the selectors this applies to.
+  $form['fonts']['apply'][$font_element_key]['selector'] = array(
+    '#type' => 'container',
+    '#markup' => t('Applies to: @selectors' , array('@selectors' => $font_element_values['selector'])),
+    '#attributes' => array('class' => array('font-selector-list')),
+  );
 }

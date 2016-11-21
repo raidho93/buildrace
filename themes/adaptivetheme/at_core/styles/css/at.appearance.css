@@ -64,6 +64,17 @@
 .admin-theme--seven details details {
   background: inherit;
 }
+.admin-theme--seven details summary {
+  padding-top: .75em;
+  padding-bottom: .75em;
+}
+.admin-theme--seven ul.tips,
+.admin-theme--seven .description,
+.admin-theme--seven div.description,
+.admin-theme--seven .form-item .description,
+.admin-theme--seven .details-description {
+  color: #757575;
+}
 .admin-theme--seven blockquote {
   border-left: 10px solid #A6A5A1;
   padding-left: 10px;
@@ -94,7 +105,7 @@
 .admin-theme--seven .subsystem-enabled-container {
   box-sizing: border-box;
   float: right;
-  margin-top: -1.75em;
+  margin-top: -2em;
   padding: 0;
 }
 .admin-theme--seven .subsystem-enabled-container .form-type-checkbox {
@@ -106,6 +117,7 @@
 .admin-theme--seven .layouts-column {
   border: 0;
   margin: 0;
+  padding-top: 12px;
   box-sizing: border-box;
 }
 @media all and (min-width: 60em) {
@@ -266,6 +278,10 @@
   margin: 0 0 10px;
   padding: 0;
 }
+.admin-theme--seven #edit-layouts #edit-layout-select select {
+  min-width: 18em;
+  max-width: 90%;
+}
 @media all and (min-width: 60em) {
   .admin-theme--seven #edit-layouts #edit-layout-select .form-type-select {
     width: 75%;
@@ -383,6 +399,21 @@
 .admin-theme--seven {
   /* Image alignment options */
 }
+.admin-theme--seven #edit-docs {
+  overflow: hidden;
+  *overflow: visible;
+  *zoom: 1;
+}
+.admin-theme--seven #edit-docs .at-docs {
+  float: right;
+  font-weight: 700;
+}
+.admin-theme--seven #edit-docs .docs-ext-link-icon {
+  fill: #a6a6a6;
+  width: 1.1em;
+  position: relative;
+  top: .25em;
+}
 .admin-theme--seven #edit-extensions > .details-wrapper {
   padding: 0;
 }
@@ -394,6 +425,16 @@
   border-left: 0;
   border-right: 0;
   border-bottom: 0;
+}
+.admin-theme--seven #edit-extensions .vertical-tabs__menu {
+  border-top: 0;
+}
+.admin-theme--seven #edit-extensions .vertical-tabs__menu-item {
+  border: 0;
+}
+.admin-theme--seven #edit-extensions .vertical-tabs__menu-item.is-selected {
+  border-right: 1px solid #fcfcfa;
+  border-bottom: 1px solid #b3b2ad;
 }
 .admin-theme--seven #edit-extensions .vertical-tabs-list {
   width: 25%;
@@ -435,6 +476,10 @@
   font-size: 1em;
   line-height: 1.295em;
   font-weight: 700;
+}
+.admin-theme--seven #edit-fonts div.font-selector-list {
+  color: #757575;
+  font-size: 0.95em;
 }
 .admin-theme--seven #edit-image-settings .description,
 .admin-theme--seven #edit-image-settings .form-type-radios {
@@ -504,6 +549,25 @@
 .admin-theme--seven #edit-touch-icons-settings .field-prefix {
   color: #666;
 }
+.admin-theme--seven #edit-responsive-menus .form-type-select:before, .admin-theme--seven #edit-responsive-menus .form-type-select:after {
+  content: " ";
+  display: table;
+}
+.admin-theme--seven #edit-responsive-menus .form-type-select:after {
+  clear: both;
+}
+.admin-theme--seven #edit-responsive-menus .form-type-select select {
+  width: 100%;
+}
+@media screen and (min-width: 65em) {
+  .admin-theme--seven #edit-responsive-menus .form-type-select label {
+    float: left;
+    width: 150px;
+  }
+  .admin-theme--seven #edit-responsive-menus .form-type-select select {
+    width: 350px;
+  }
+}
 .admin-theme--seven #edit-block-classes label span {
   font-weight: 400;
 }
@@ -526,7 +590,7 @@
   font-weight: bold;
 }
 .admin-theme--seven #edit-devel .description {
-  color: #777;
+  color: #757575;
 }
 .admin-theme--seven #edit-devel .details-wrapper {
   padding: 0.35em 0.65em 0.75em;
@@ -547,6 +611,9 @@
 .admin-theme--seven #edit-shortcodes .class-list dt {
   width: 15em;
   font-weight: 700;
+}
+.admin-theme--seven #edit-shortcodes .class-list dd {
+  margin: 0.35em 0 0.75em 0;
 }
 .admin-theme--seven #edit-slideshows label {
   display: inline-block;

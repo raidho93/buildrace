@@ -11,6 +11,12 @@ include_once(drupal_get_path('theme', 'at_core') . '/forms/ext/extension_setting
 
 $settings_extensions_form_open = theme_get_setting('settings.extensions_form_open', $theme);
 
+$form['docs'] = array(
+  '#type' => 'container',
+  '#markup' => t('<a class="at-docs" href="@docs" target="_blank" title="External link: docs.adaptivethemes.com">View online documentation <svg class="docs-ext-link-icon" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1408 928v320q0 119-84.5 203.5t-203.5 84.5h-832q-119 0-203.5-84.5t-84.5-203.5v-832q0-119 84.5-203.5t203.5-84.5h704q14 0 23 9t9 23v64q0 14-9 23t-23 9h-704q-66 0-113 47t-47 113v832q0 66 47 113t113 47h832q66 0 113-47t47-113v-320q0-14 9-23t23-9h64q14 0 23 9t9 23zm384-864v512q0 26-19 45t-45 19-45-19l-176-176-652 652q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l652-652-176-176q-19-19-19-45t19-45 45-19h512q26 0 45 19t19 45z"/></svg></a>', array('@docs' => ' //docs.adaptivethemes.com/')),
+  '#weight' => -1000,
+);
+
 $form['extensions'] = array(
   '#type' => 'details',
   '#title' => t('Extensions'),
@@ -90,7 +96,7 @@ $form['enable_extensions']['settings_enable_fonts'] = array(
   '#type' => 'checkbox',
   '#title' => t('Fonts'),
   '#default_value' => theme_get_setting('settings.enable_fonts', $theme),
-  '#description' => t('Apply fonts to site elements. Supports <a href="@gflink" target="_blank">Google</a> and <a href="@tklink" target="_blank">Typekit</a> fonts, as well as standard websafe fonts.', array('@tklink' => 'https://typekit.com/', '@gflink' => 'https://www.google.com/fonts')),
+  '#description' => t('Apply fonts to site elements. Supports <a href="@gflink" target="_blank">Google</a> and <a href="@tklink" target="_blank">Typekit</a> fonts, as well as standard websafe fonts.', array('@tklink' => 'https://typekit.com/', '@gflink' => 'https://fonts.google.com/')),
 );
 
 // Title styles
@@ -132,6 +138,17 @@ $form['enable_extensions']['settings_enable_custom_css'] = array(
   '#description' => t('Enter custom CSS rules for minor adjustment to your theme.'),
   '#default_value' => theme_get_setting('settings.enable_custom_css', $theme),
 );
+
+// CKEditor
+// Check if theme is Mimic compatible.
+if (theme_get_setting('settings.mimic_compatible', $theme) === 1) {
+  $form['enable_extensions']['settings_enable_ckeditor'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('CKEditor Skin'),
+    '#description' => t('Select CKEditor skin.'),
+    '#default_value' => theme_get_setting('settings.enable_ckeditor', $theme),
+  );
+}
 
 // Devel
 $form['enable_extensions']['settings_enable_devel'] = array(
@@ -187,6 +204,7 @@ if (theme_get_setting('settings.enable_extensions', $theme) == 1) {
     'mobile_blocks',
     'slideshows',
     'custom_css',
+    'ckeditor',
     'markup_overrides',
     'devel',
     'legacy_browsers',
@@ -196,10 +214,9 @@ if (theme_get_setting('settings.enable_extensions', $theme) == 1) {
   $values = $form_state->getValues();
 
   foreach ($extensions_array as $extension) {
-    $form_state_value = isset($values["settings_enable_$extension"]);
-    $form_value = $form['enable_extensions']["settings_enable_$extension"]['#default_value'];
-    if (($form_state_value && $form_state_value === 1) ||
-       (!$form_state_value && $form_value == 1)) {
+    $form_state_value = isset($values["settings_enable_$extension"]) ? $values["settings_enable_$extension"] : 0;
+    $form_value = isset($form['enable_extensions']["settings_enable_$extension"]['#default_value']) ? $form['enable_extensions']["settings_enable_$extension"]['#default_value'] : 0;
+    if (($form_state_value && $form_state_value === 1) || (!$form_state_value && $form_value === 1)) {
       include_once($at_core_path . '/forms/ext/' . $extension . '.php');
     }
   }

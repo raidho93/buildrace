@@ -1,8 +1,23 @@
 // Extensions
 .admin-theme--seven {
 
-  #edit-extensions {
+  #edit-docs {
+    @include cf;
 
+    .at-docs {
+      float: right;
+      font-weight: 700;
+    }
+
+    .docs-ext-link-icon {
+      fill: #a6a6a6;
+      width: 1.1em;
+      position: relative;
+      top: .25em;
+    }
+  }
+
+  #edit-extensions {
     &> .details-wrapper {
       padding: 0;
     }
@@ -16,6 +31,19 @@
       border-left: 0;
       border-right: 0;
       border-bottom: 0;
+    }
+
+    .vertical-tabs__menu {
+       border-top: 0;
+    }
+
+    .vertical-tabs__menu-item {
+      border: 0;
+    }
+
+    .vertical-tabs__menu-item.is-selected {
+      border-right: 1px solid #fcfcfa;
+      border-bottom: 1px solid #b3b2ad;
     }
 
     .vertical-tabs-list {
@@ -32,7 +60,6 @@
     .submit--advanced-settings {}
   }
 
-
   // Fonts
   #edit-fonts {
     .form-type-number {
@@ -42,7 +69,6 @@
     }
 
     #edit-setup {
-
       #edit-help,
       .form-item-settings-font-websafe,
       .form-item-settings-font-google,
@@ -72,12 +98,16 @@
         font-weight: 700;
       }
     }
+
+    div.font-selector-list {
+      color: #757575;
+      font-size: 0.95em;
+    }
   }
 
 
   /* Image alignment options */
   #edit-image-settings {
-
     .description,
     .form-type-radios {
       clear: both;
@@ -131,11 +161,8 @@
     }
   }
 
-
-
   // Titles
   #edit-titles {
-
     details {
       label {
         display: inline-block;
@@ -144,11 +171,8 @@
     }
   }
 
-
-
   // Touch icons
   #edit-touch-icons-settings {
-
     .form-type-textfield {
       margin-bottom: 20px;
     }
@@ -162,11 +186,27 @@
     }
   }
 
-
   // Resp menus
   #edit-responsive-menus {
-  }
+    .form-type-select {
+      @include clearfix-micro;
 
+      select {
+        width: 100%;
+      }
+
+      @media screen and (min-width: 65em) {
+        label {
+          float: left;
+          width: 150px;
+        }
+
+        select {
+          width: 350px;
+        }
+      }
+    }
+  }
 
   // Add Classes
   #edit-block-classes {
@@ -197,16 +237,14 @@
     }
   }
 
-
   // Developer settings
   #edit-devel {
-
      label {
        font-weight: bold;
      }
 
     .description {
-      color: #777;
+      color: #757575;
     }
 
     .details-wrapper {
@@ -214,10 +252,8 @@
     }
   }
 
-
   // Shortcodes
   #edit-shortcodes {
-
     #edit-title {
       padding: 1em 0 0;
     }
@@ -235,13 +271,16 @@
         clear: right;
       }
 
-      dt {width: 15em; font-weight: 700}
-      dd {}
+      dt {
+        width: 15em;
+        font-weight: 700;
+      }
+
+      dd {
+        margin: 0.35em 0 0.75em 0;
+      }
     }
   }
-
-
-
 
   // Slideshows
   #edit-slideshows {
@@ -264,7 +303,6 @@
 
   // Mobile blocks
   #edit-mobile-blocks {
-
     .details-description {
       margin-bottom: 1em;
 

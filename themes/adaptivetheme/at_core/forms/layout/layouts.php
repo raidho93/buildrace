@@ -14,8 +14,6 @@ $layout_compatible_data = $layout_data->getCompatibleLayout();
 $layout_config = $layout_compatible_data['layout_config'];
 $css_config = $layout_compatible_data['css_config'];
 
-//kpr($layout_config);
-
 
 // Prepare variables for getting the visual layout thingee CSS file.
 $provider_path = drupal_get_path('theme', $css_config['layout_provider']) . '/layout/' . $css_config['layout'];
@@ -294,6 +292,16 @@ foreach($breakpoints as $group_message_key => $group_message_values)  {
     );
   }
 }
+
+// Change message
+$form['layouts']['adv_options']['breakpoint_group']['layouts_breakpoint_group_haschanged'] = array(
+  '#type' => 'container',
+  '#markup' => t('<em>Save the layout settings to change the breakpoint group and update the layout breakpoints.</em>'),
+  '#attributes' => array('class' => array('warning', 'messages', 'messages--warning')),
+  '#states' => array(
+    'invisible' => array('select[name="settings_breakpoint_group_layout"]' => array('value' => $breakpoints_group_layout)),
+  ),
+);
 
 // Max width.
 $max_width_units = array(

@@ -14,7 +14,6 @@ $layout_data = new LayoutCompatible($theme);
 $layout_compatible_data = $layout_data->getCompatibleLayout();
 $layout_config = $layout_compatible_data['layout_config'];
 
-// TODO: search base themes, we need all declarations from all base themes, they can all potentially work.
 $shortcodes_yml = $subtheme_path . '/' . $theme . '.shortcodes.yml';
 if (file_exists($shortcodes_yml)) {
   $shortcodes_parser = new Parser();
@@ -85,17 +84,16 @@ foreach ($theme_regions as $region_key => $region_value) {
 }
 
 // Blocks
-$form['shortcodes']['block_classes'] = array(
-  '#type' => 'details',
-  '#title' => t('Blocks'),
-);
-foreach ($theme_blocks as $block_key => $block_value) {
-  $block_label = $block_value->label() . ' <span>(' . $block_key . ')</span>';
-  $form['shortcodes']['block_classes']['settings_block_classes_' . $block_key] = array(
-    '#type' => 'textfield',
-    '#title' => t($block_label),
-    '#default_value' => Html::escape(theme_get_setting('settings.block_classes_' . $block_key, $theme)),
-  );
+if (!empty($theme_blocks)) {
+  $form['shortcodes']['block_classes'] = array('#type' => 'details', '#title' => t('Blocks'),);
+  foreach ($theme_blocks as $block_key => $block_value) {
+    $block_label = $block_value->label() . ' <span>(' . $block_key . ')</span>';
+    $form['shortcodes']['block_classes']['settings_block_classes_' . $block_key] = array(
+      '#type' => 'textfield',
+      '#title' => t($block_label),
+      '#default_value' => Html::escape(theme_get_setting('settings.block_classes_' . $block_key, $theme)),
+    );
+  }
 }
 
 // Node types
@@ -129,10 +127,10 @@ if (!empty($shortcodes)) {
   foreach ($shortcodes as $class_type => $class_values) {
 
     if (isset($class_values['description'])) {
-      $class_description = $class_values['description'];
+      $class_type_description = $class_values['description'];
     }
     else {
-      $class_description = 'No description provided.';
+      $class_type_description = 'No description provided.';
     }
 
     if (isset($class_values['elements'])) {
@@ -146,7 +144,7 @@ if (!empty($shortcodes)) {
       '#type' => 'details',
       '#group' => 'available_classes',
       '#title' => t($class_values['name']),
-      '#markup' => t('<h3>' . $class_values['name'] . '</h3><p>'. $class_description .'</p><p><b>Use for:</b> <i>' . $class_elements . '</i></p>' ),
+      '#markup' => t('<h3>' . $class_values['name'] . '</h3><p>'. $class_type_description .'</p><p><b>Use for:</b> <i>' . $class_elements . '</i></p>' ),
     );
 
     // Use this setting to conditionally load only the CSS we need for this theme.
@@ -166,14 +164,15 @@ if (!empty($shortcodes)) {
 
     foreach ($class_values['classes'] as $class_key => $class_data) {
       $class_name =  Xss::filterAdmin($class_data['class']);
+      $class_description = isset($class_data['description']) ? t($class_data['description']): '';
 
       // This is a test, very rough and should be generalized to allow any shortcode to supply an image.
       if (isset($class_data['image']) && $class_type == 'patterns') {
         $class_image = $subtheme_path . '/' . $class_data['image'];
-        $class_output[$class_type][] = '<dt>' . $class_name . '</dt><dd>' . t($class_data['description']) . '<div class="pattern-image-clip"><img class="pattern-image" src="/' . $class_image .  '" alt="Background image for the ' . $class_name .  ' pattern." /></div></dd>';
+        $class_output[$class_type][] = '<dt>' . $class_name . '</dt><dd>' . $class_description . '<div class="pattern-image-clip"><img class="pattern-image" src="/' . $class_image .  '" alt="Background image for the ' . $class_name .  ' pattern." /></div></dd>';
       }
       else {
-        $class_output[$class_type][] = '<dt>' . $class_name . '</dt><dd>' . t($class_data['description']) . '</dd>';
+        $class_output[$class_type][] = '<dt>' . $class_name . '</dt><dd>' . $class_description . '</dd>';
       }
     }
 
