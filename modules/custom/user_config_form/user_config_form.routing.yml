@@ -1,0 +1,9 @@
+
+user_config_form.user_config_form:
+  path: '/user_config_form/form/user_config'
+  defaults:
+    _form: '\Drupal\user_config_form\Form\UserConfigForm'
+    _title: 'UserConfigForm'
+  requirements:
+    _access: 'TRUE'
+  

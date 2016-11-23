@@ -1,0 +1,14 @@
+{
+  "name": "drupal/user_config_form",
+  "type": "drupal-module",
+  "description": "This module let's users edit their own account",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/user_config_form",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/user_config_form",
+    "source": "http://cgit.drupalcode.org/user_config_form"
+  },
+  "require": { }
+}

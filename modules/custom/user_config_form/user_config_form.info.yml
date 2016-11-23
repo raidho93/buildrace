@@ -1,0 +1,5 @@
+name: User Config Form
+type: module
+description: This module let's users edit their own account
+core: 8.x
+package: Custom

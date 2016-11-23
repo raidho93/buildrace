@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains user_config_form.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function user_config_form_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the user_config_form module.
+    case 'help.page.user_config_form':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module let&#039;s users edit their own account') . '</p>';
+      return $output;
+
+    default:
+  }
+}
