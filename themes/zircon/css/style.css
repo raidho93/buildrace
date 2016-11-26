@@ -111,7 +111,9 @@ pre {
   white-space: pre-wrap;
 }
 
-
+.hpersonal{
+ color: #ff4411; font-size: 48px; font-family: 'Signika', sans-serif; padding-bottom: 10px; text-align: center;
+}
 /* ------------------ Fonts ------------------ */
 
 body,
