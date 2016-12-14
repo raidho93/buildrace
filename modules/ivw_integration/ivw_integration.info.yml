@@ -11,8 +11,8 @@ dependencies:
 # version: '8.x-1.x-dev'
 # project: 'ivw_integration'
 # datestamp: 1449764516
-# Information added by Drupal.org packaging script on 2016-10-26
-version: '8.x-1.0-rc4'
+# Information added by Drupal.org packaging script on 2016-12-04
+version: '8.x-1.0'
 core: '8.x'
 project: 'ivw_integration'
-datestamp: 1477486144
+datestamp: 1480855086

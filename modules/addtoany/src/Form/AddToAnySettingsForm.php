@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\addtoany\Form\AddToAnySettingsForm.
- */
-
 namespace Drupal\addtoany\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
@@ -126,51 +121,6 @@ class AddToAnySettingsForm extends ConfigFormBase {
       ),
     );
 
-    $form['addtoany_placement_settings'] = array(
-      '#type'  => 'details',
-      '#title' => t('Placement'),
-      '#collapsible'  => TRUE,
-      '#collapsed'    => TRUE,
-    );
-    $form['addtoany_placement_settings']['addtoany_nodetypes'] = array(
-      '#type'          => 'checkboxes',
-      '#title'         => t('Node types'),
-      '#description'   => t('Display buttons for these node types.'),
-      '#default_value' => $addtoany_settings->get('nodetypes'),
-      '#options'       => node_type_get_names(),
-    );
-    $form['addtoany_placement_settings']['addtoany_display_in_teasers'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t('Display for node teasers'),
-      '#default_value' => $addtoany_settings->get('display_in_teasers'),
-      '#description'   => t('Display buttons for node teasers in selected sections.'),
-      '#states'        => array(
-        // Disable if no section placement is selected
-        'disabled' => array(
-          ':input[name="addtoany_display_in_nodecont"]' => array('checked' => FALSE),
-        ),
-      ),
-    );
-    $form['addtoany_placement_settings']['addtoany_display_in_nodecont'] = array(
-      '#type'          => 'checkbox',
-      '#title'         => t('Display in content section'),
-      '#default_value' => $addtoany_settings->get('display_in_nodecont'),
-      '#description'   => t('Display buttons in the content section of node pages.'),
-    );
-    $form['addtoany_placement_settings']['addtoany_display_weight'] = array(
-      '#type'          => 'weight',
-      '#title'         => t('Content weight'),
-      '#default_value' => $addtoany_settings->get('display_weight'),
-      '#delta'         => 50,
-      '#description'   => t('Optional weight value for reordering AddToAny within the content section.'),
-      '#states'        => array(
-        // Show only if placement in "content" selected
-        'visible' => array(
-          ':input[name="addtoany_display_in_nodecont"]' => array('checked' => TRUE),
-        ),
-      ),
-    );
-
     $form['addtoany_additional_settings'] = array(
       '#type'         => 'details',
       '#title'        => t('Additional options'),
@@ -198,6 +148,18 @@ class AddToAnySettingsForm extends ConfigFormBase {
       '#description'   => t('Disabling may affect analytics and limit some functionality.'),
     );
 
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $form['tokens'] = array(
+        '#theme' => 'token_tree_link',
+        '#token_types' => array('node'),
+        '#global_types' => TRUE,
+        '#click_insert' => TRUE,
+        '#show_restricted' => FALSE,
+        '#recursion_limit' => 3,
+        '#text' => t('Browse available tokens'),
+      );
+    }
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -209,12 +171,8 @@ class AddToAnySettingsForm extends ConfigFormBase {
       ->set('additional_js', $values['addtoany_additional_js'])
       ->set('buttons_size', $values['addtoany_buttons_size'])
       ->set('custom_universal_button', $values['addtoany_custom_universal_button'])
-      ->set('display_in_nodecont', $values['addtoany_display_in_nodecont'])
-      ->set('display_in_teasers', $values['addtoany_display_in_teasers'])
-      ->set('display_weight', $values['addtoany_display_weight'])
       ->set('universal_button', $values['addtoany_universal_button'])
       ->set('universal_button_placement', $values['addtoany_universal_button_placement'])
-      ->set('nodetypes', array_values(array_filter($values['addtoany_nodetypes'])))
       ->set('no_3p', $values['addtoany_no_3p'])
       ->save();
 
