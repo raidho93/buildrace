@@ -31,7 +31,7 @@ use Drupal\dynamic_entity_reference\DataDynamicReferenceDefinition;
  *   id = "dynamic_entity_reference",
  *   label = @Translation("Dynamic entity reference"),
  *   description = @Translation("An entity field containing a dynamic entity reference."),
- *   category = @Translation("Reference"),
+ *   category = @Translation("Dynamic Reference"),
  *   no_ui = FALSE,
  *   list_class = "\Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList",
  *   default_widget = "dynamic_entity_reference_default",
@@ -518,7 +518,7 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
    * @return string[]
    *   All the target entity type ids that can be referenced.
    */
-  public static function getTargetTypes($settings) {
+  public static function getTargetTypes(array $settings) {
     $labels = \Drupal::service('entity_type.repository')->getEntityTypeLabels(TRUE);
     $options = array_filter(array_keys($labels[(string) t('Content', [], ['context' => 'Entity type group'])]), function ($entity_type_id) {
       return static::entityHasIntegerId($entity_type_id);
@@ -564,12 +564,41 @@ class DynamicEntityReferenceItem extends EntityReferenceItem {
   public static function calculateStorageDependencies(FieldStorageDefinitionInterface $field_definition) {
     $dependencies = FieldItemBase::calculateStorageDependencies($field_definition);
     $entity_manager = \Drupal::entityTypeManager();
-    foreach (array_keys(static::defaultFieldSettings()) as $entity_type_id) {
+    foreach (static::getTargetTypes($field_definition->getSettings()) as $entity_type_id) {
       if ($entity_manager->hasDefinition($entity_type_id) && $target_entity_type = $entity_manager->getDefinition($entity_type_id)) {
         $dependencies['module'][] = $target_entity_type->getProvider();
       }
     }
     return $dependencies;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getPreconfiguredOptions() {
+    $options = [];
+
+    // Add all the commonly referenced entity types as distinct pre-configured
+    // options.
+    $entity_types = \Drupal::entityTypeManager()->getDefinitions();
+    $common_references = array_filter($entity_types, function (EntityTypeInterface $entity_type) {
+      return $entity_type->isCommonReferenceTarget();
+    });
+
+    /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
+    foreach ($common_references as $entity_type) {
+      $options[$entity_type->id()] = [
+        'label' => $entity_type->getLabel(),
+        'field_storage_config' => [
+          'settings' => [
+            'exclude_entity_types' => FALSE,
+            'entity_type_ids' => [$entity_type->id()],
+          ],
+        ],
+      ];
+    }
+
+    return $options;
   }
 
 }

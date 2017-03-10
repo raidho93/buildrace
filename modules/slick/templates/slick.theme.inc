@@ -20,10 +20,6 @@ function template_preprocess_slick(&$variables) {
   $optionset = isset($element['#optionset']) ? $element['#optionset'] : Slick::load($settings['optionset']);
   $js        = $customs ? array_merge($optionset->getSettings(), $customs) : $optionset->getSettings();
 
-  if (isset($variables['settings'])) {
-    $settings = array_merge($settings, $variables['settings']);
-  }
-
   // Prepare attributes.
   $attributes = &$variables['attributes'];
   $content_attributes = new Attribute();
@@ -33,6 +29,7 @@ function template_preprocess_slick(&$variables) {
   $attributes['id'] = $display == 'thumbnail' ? $id . '-thumbnail' : $id;
 
   // Sniffs for Views to allow block__no_wrapper, views__no_wrapper, etc.
+  // @todo: Use $attributes if TWIG class ordering puts $attributes to the last.
   if ($settings['view_name'] && $settings['current_view_mode']) {
     $settings['attributes']['class'][] = str_replace('_', '-', 'slick--view--' . $settings['view_name']);
     $settings['attributes']['class'][] = str_replace('_', '-', 'slick--view--' . $settings['view_name'] . '--' . $settings['current_view_mode']);
@@ -42,16 +39,17 @@ function template_preprocess_slick(&$variables) {
   $settings['count']   = isset($settings['count']) ? $settings['count'] : count($element['#items']);
   $settings['unslick'] = $settings['unslick'] || $settings['count'] == 1;
 
-  foreach (['asNavFor', 'nextArrow', 'prevArrow', 'downArrowTarget', 'downArrowOffset', 'slidesToShow', 'vertical'] as $key) {
-    $settings[$key] = isset($js[$key]) ? $js[$key] : FALSE;
+  foreach (Slick::jsSettings() as $key => $default) {
+    $settings[$key] = isset($js[$key]) ? $js[$key] : $default;
   }
 
-  $settings['lazy'] = isset($settings['lazy']) ? $settings['lazy'] : $js['lazyLoad'];
-
   // Blazy can still lazyload an unslick.
+  $settings['lazy'] = empty($settings['lazy']) ? $js['lazyLoad'] : $settings['lazy'];
   if ($display != 'thumbnail') {
     if ($settings['lazy'] == 'blazy' || !empty($settings['blazy'])) {
-      $js['lazyLoad'] = 'blazy';
+      if ($settings['lazy'] == 'blazy') {
+        $js['lazyLoad'] = 'blazy';
+      }
       $attributes['data-blazy'] = empty($settings['blazy_data']) ? '' : Json::encode($settings['blazy_data']);
     }
 
@@ -61,7 +59,7 @@ function template_preprocess_slick(&$variables) {
     }
   }
 
-  if ($js['rtl']) {
+  if (!empty($js['rtl'])) {
     $attributes['dir'] = 'rtl';
   }
 
@@ -69,14 +67,14 @@ function template_preprocess_slick(&$variables) {
   if (!$settings['unslick']) {
     $content_attributes->setAttribute('id', $attributes['id'] . '-slider');
 
-    // @todo drop backward compatibility, and use direct variables instead.
-    $variables['arrow_attributes'] = $settings['arrow']['attributes'] = new Attribute();
-    if ($display == 'main' && $js['downArrow'] && $js['downArrowTarget']) {
-      $variables['arrow_down_attributes'] = $settings['downArrow']['attributes'] = new Attribute();
+    $variables['arrow_attributes'] = new Attribute();
+    if ($display == 'main' && !empty($js['downArrow']) && !empty($js['downArrowTarget'])) {
+      $variables['arrow_down_attributes'] = new Attribute();
     }
 
     // focusOnSelect won't work with empty slide value, so add proper selector.
-    if (empty($js['slide']) && $js['focusOnSelect']) {
+    // Respects core Grid markups which may wrap .slick__slide within anon DIV.
+    if (empty($js['slide']) && !empty($js['focusOnSelect'])) {
       $js['slide'] = ($js['rows'] == 1 && $js['slidesPerRow'] == 1) ? '.slick__slide' : $js['slide'];
     }
 
@@ -220,6 +218,8 @@ function template_preprocess_slick_grid(&$variables) {
 
 /**
  * Prepares variables for slick-image.html.twig template.
+ *
+ * @deprecated: Just use blazy.html.twig to reduce function calls.
  */
 function template_preprocess_slick_image(&$variables) {
   template_preprocess_blazy($variables);

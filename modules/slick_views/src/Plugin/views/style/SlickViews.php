@@ -67,7 +67,7 @@ class SlickViews extends BlazyStylePluginBase {
   }
 
   /**
-   * Overrides \Drupal\views\Plugin\views\style\StylePluginBase::buildOptionsForm().
+   * Overrides parent::buildOptionsForm().
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
     $fields = [
@@ -90,7 +90,8 @@ class SlickViews extends BlazyStylePluginBase {
 
     $this->admin()->buildSettingsForm($form, $definition);
 
-    $wide = count($definition['captions']) > 2 ? ' form--wide' : '';
+    $count = count($definition['captions']);
+    $wide = $count > 2 ? ' form--wide form--caption-' . $count : ' form--caption-' . $count;
     $title = '<p class="form__header form__title">';
     $title .= $this->t('Check Vanilla if using content/custom markups, not fields. <small>See it under <strong>Format > Show</strong> section. Otherwise slick markups apply which require some fields added below.</small>');
     $title .= '</p>';
@@ -117,7 +118,9 @@ class SlickViews extends BlazyStylePluginBase {
     $id        = Blazy::getHtmlId("slick-views-{$view_name}-{$view_mode}", $settings['id']);
 
     $settings += [
-      'cache_metadata'    => ['keys'=> [$id, $view_mode, $settings['optionset']]],
+      'cache_metadata'    => [
+        'keys' => [$id, $view_mode, $settings['optionset']],
+      ],
       'count'             => $count,
       'current_view_mode' => $view_mode,
       'view_name'         => $view_name,
@@ -150,14 +153,14 @@ class SlickViews extends BlazyStylePluginBase {
   /**
    * Returns slick contents.
    */
-  public function buildElements($settings = [], $rows) {
-    $build    = [];
-    $view     = $this->view;
-    $keys     = array_keys($view->field);
-    $item_id  = $settings['item_id'];
+  public function buildElements(array $settings, $rows) {
+    $build   = [];
+    $view    = $this->view;
+    $keys    = array_keys($view->field);
+    $item_id = $settings['item_id'];
+
     // @todo enable after proper checks.
     // $settings = array_filter($settings);
-
     foreach ($rows as $index => $row) {
       $view->row_index = $index;
 
@@ -179,7 +182,7 @@ class SlickViews extends BlazyStylePluginBase {
         $this->buildElement($slide, $row, $index);
 
         if (!empty($settings['nav'])) {
-          $thumb[$item_id]  = empty($settings['thumbnail'])         ? [] : $this->getFieldRendered($index, $settings['thumbnail']);
+          $thumb[$item_id]  = empty($settings['thumbnail']) ? [] : $this->getFieldRendered($index, $settings['thumbnail']);
           $thumb['caption'] = empty($settings['thumbnail_caption']) ? [] : $this->getFieldRendered($index, $settings['thumbnail_caption']);
 
           $build['thumb']['items'][$index] = $thumb;

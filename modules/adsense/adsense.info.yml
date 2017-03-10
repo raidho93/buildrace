@@ -5,8 +5,8 @@ package: Adsense
 # core: 8.x
 configure: adsense.main_settings
 
-# Information added by Drupal.org packaging script on 2016-06-22
-version: '8.x-1.0-beta1'
+# Information added by Drupal.org packaging script on 2016-10-04
+version: '8.x-1.0-beta1+3-dev'
 core: '8.x'
 project: 'adsense'
-datestamp: 1466614763
+datestamp: 1475590740
